@@ -1,31 +1,724 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+	<title>reveal.js</title>
 
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/solarized.css">
 
-		<!-- Theme used for syntax highlighting of code -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
 
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement( 'link' );
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName( 'head' )[0].appendChild( link );
+	</script>
+</head>
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<section>
+					<h1>A11Y in SPAs</h1>
+					<p>By Kris Van Houten</p>
+				</section>
+				<section>
+					<h2>Hamilton, OH</h2>
+					<img src="/img/cincinnati.png" alt="A map showing where I live in Cincinnati" />
+				</section>
+				<section>
+					<h2>Durango, CO</h2>
+					<img src="/img/durango.png" alt="A map showing where I will soon live in Durango" />
+				</section>
+				<section>
+					<h2>Kids</h2>
+					<img src="/img/kids.jpg" width="500" alt="A photo of my kids" />
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Review</h2>
+				</section>
+				<section>
+					<h3>Week One: Design</h3>
+					<p>By: Josh Teal</p>
+					<ul>
+						<li>Color selection</li>
+						<li>App layout</li>
+						<li>Font choices</li>
+						<li>Dimensions of critical elements</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Week Two: Semantic HTML</h3>
+					<p>By: Nathan Batson</p>
+					<ul>
+						<li>Excellent examples</li>
+						<li>Aria labels</li>
+						<li>Landmark roles</li>
+						<li>Didn't spoil my talk</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Week Three: A11Y in SPAs</h3>
+					<p>By: Kris Van Houten</p>
+					<ul>
+						<li>Tools we've implemented</li>
+						<li>Components</li>
+						<li>Next Steps</li>
+					</ul>
+				</section>
+			</section>
+			<section>
+				<h2>Goals</h2>
+				<ul>
+					<li class="fragment">How do we make this as simple as possible?</li>
+					<li class="fragment">How can we get the greatest results with the least amount of work?</li>
+					<li class="fragment">How can we make this process not just user friendly, but developer friendly?</li>
+				</ul>
+			</section>
+			<section>
+				<h2>Tools We've Implemented</h2>
+				<aside class="notes">
+					<ul>
+						<li>One of the nice things about Ember is the addon ecosystem</li>
+						<li>Allows us to benefit from the work of others who are tackling similar scenarios</li>
+					</ul>
+				</aside>
+			</section>
+			<section>
+				<section>
+					<h2>Context Switch Awareness</h2>
+					<ul>
+						<li class="fragment">Web Pages and Single Page Apps are different</li>
+						<li class="fragment">Enter the Ember A11Y Addon</li>
+						<li class="fragment">Exposes the <code>{{focusing-outlet}}</code> component</li>
+					</ul>
+					<aside class="notes">
+						<ul>
+							<li>Still got some work to do to make it work 100%</li>
+							<li>Works pretty well, except for the areas we're not using standard Ember conventions to fetch critical data</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Before</h3>
+					<img src="/img/context-home.png" alt="A picture of the landing page as it appears upon login" />
+				</section>
+				<section>
+					<h3>Before</h3>
+					<img src="/img/context-profile-before.png" alt="A picture of the landing page identifying that the clicked link is still focused" />
+					<p>Focus stays on the clicked link</p>
+				</section>
+				<section>
+					<h3>After</h3>
+					<img src="/img/context-profile-after.png" alt="A picture of the landing page identifying that the outlet is focused" />
+					<p>Focus is set on the outlet's container</p>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Accessibilitiy Audit</h2>
+					<ul>
+						<li class="fragment">Is basically the aXe engine in our app</li>
+						<li class="fragment">Can work in development environments</li>
+						<li class="fragment">Lets us add test coverage for basic challenges</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Example Use</h3>
+					<pre><code class="javascript" data-trim>
+						// tests/integration/components/ui-awesome-test.js
+						import a11yAudit from 'ember-a11y-testing/test-support/audit';
+
+						describeComponent(
+						'ui-awesome',
+						'Integration: UI Awesome Component',
+						function() {
+							let message;
+							it('generates an awesome form', function(done) {
+								this.render(hbs`{{ui-awesome}}`);
+
+								// test all the things
+
+								a11yAudit(this.$()).then((result) => {
+									message = 'passes a11y audit';
+									expect(result, message).to.be.undefined;
+									done();
+								});
+							});
+						}
+						);
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>Import the tool</li>
+							<li>Pass it any HTML, from a single HTML element to a whole page</li>
+							<li>Will log any recommendations or violations that it finds</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Helpful Failure</h3>
+					<pre><code class="javascript" data-trim>
+						// Browser console
+						ACCESSIBILITY VIOLATIONS: 1
+						CRITICAL: Form elements must have labels
+						Offending markup (1)
+						Additional info: https://dequeuniversity.com/rules/axe/2.1/label?application=axeAPI
+					</code></pre>
+				</section>
+				<section>
+					<h3>Automated Education</h3>
+					<img src="/img/axe.png" alt="Example page on Deque Labs Website, explaining the importance of an accessibility feature" />
+				</section>
+			</section>
+			<section>
+				<h2>Components</h2>
+				<aside class="notes">
+					<ul>
+						<li>For the most part, there is no sorcery going on here. Just using standard Ember features to produce accessible Ember markup</li>
+						<li>Want to start with something super simple, not because I think you don't know better, but rather to demonstrate some of the initial patterns we've been implementing</li>
+					</ul>
+				</aside>
+			</section>
+			<section>
+				<section>
+					<h2>Icons</h2>
+				</section>
+				<section>
+					<h3>What We Want</h3>
+					<pre><code class="html" data-trim>
+						<span class="icon icon-settings" aria-hidden="true"></span>
+					</code></pre>
+					<p class="text-center">or</p>
+					<pre><code class="html" data-trim>
+						<span class="icon icon-settings" aria-label="Delete Post"></span>
+					</code></pre>
+				</section>
+				<section>
+					<h3>What We Have</h3>
+					<pre><code class="handlebars" data-trim>
+						{{ui-icon 'settings'}}
+
+						<!-- RESULT  -->
+						<span class="ui-icon icon icon-settings" aria-hidden="true"></span>
+					</code></pre>
+					<p class="text-center">or</p>
+					<pre><code class="handlebars" data-trim>
+						{{ui-icon 'settings' ariaLabel='Delete post'}}
+
+						<!-- RESULT  -->
+						<span class="ui-icon icon icon-settings" aria-label="Delete Post"></span>
+					</code></pre>
+				</section>
+				<section>
+					<h3>Positional Params</h3>
+					<pre><code class="handlebars" data-trim>
+						{{! example.hbs}}
+						{{ui-icon 'settings'}}
+					</code></pre>
+					<pre><code class="javascript" data-trim>
+						// components/ui-icon.js
+						const UiIcon = Component.extend({
+							tagName: 'span',
+							classNames: [
+								'ui-awesome',
+								'icon',
+							],
+
+							icon: null,
+						});
+
+						UiIcon.reopenClass({
+							positionalParams: ['icon'],
+						});
+
+						export default UiIcon;
+					</code></pre>
+
+					<aside class="notes">
+						<ul>
+							<li>Positional params allow us to pass a list of parameters in to a component, like arguments in a function.</li>
+							<li>These parameters are then set as their respective properties on the component, without us needing to explicitly call them out</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Icon Class</h3>
+					<pre><code class="handlebars" data-trim>
+						{{! example.hbs}}
+						{{ui-icon 'settings'}}
+					</code></pre>
+					<pre><code class="javascript" data-trim>
+						// components/ui-icon.js
+						const UiIcon = Component.extend({
+							classNameBindings: [
+								'iconClass',
+							],
+
+							iconClass: computed('icon', function() {
+								const icon = get(this, 'icon');
+
+								if (!icon) {
+									return;
+								}
+
+								// Accounts for both "icon-settings" and "settings"
+								return icon.includes('icon-') ? icon : `icon-${icon}`;
+							}),
+						});
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>We account for when the full icon-class is passed in, or just the icon's name</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Aria Label</h3>
+					<pre><code class="handlebars" data-trim>
+						{{! example.hbs}}
+						{{ui-icon 'settings' ariaLabel='Delete post'}}
+					</code></pre>
+					<pre><code class="javascript" data-trim>
+						// components/ui-icon.js
+						const UiIcon = Component.extend({
+							attributeBindings: [
+								'ariaLabel:aria-label',
+							],
+
+							ariaLabel: null,
+
+							ariaLabel: computed('ariaLabel', function() {
+								const ariaLabel = get(this, 'ariaLabel');
+
+								return ariaLabel ? loc(ariaLabel) : undefined;
+							}),
+						});
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>Since we rely heavily on localization strings in our app, we attempt to look up the value of the passed in ariaLabel.</li>
+							<li>If no localization string is found, it just returns the original string back to us.</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Aria Hidden</h3>
+					<pre><code class="handlebars" data-trim>
+						{{! example.hbs}}
+						{{ui-icon 'settings'}}
+					</code></pre>
+					<pre><code class="javascript" data-trim>
+						// components/ui-icon.js
+						const UiIcon = Component.extend({
+							attributeBindings: [
+								'hidden:aria-hidden',
+							],
+
+							hidden: computed('ariaLabel', function() {
+								const hasAriaLabel = get(this, 'ariaLabel');
+
+								return hasAriaLabel ? undefined : true;
+							}),
+						});
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>If no ariaLabel is provided, it automatically adds aria-hidden="true"</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Form Fields</h2>
+				</section>
+				<section>
+					<h3>Our Options</h3>
+					<pre><code class="html" data-trim>
+						<label>
+							First name
+							<input type="text" value="firstName" />
+						</label>
+					</code></pre>
+					<p class="text-center">or</p>
+					<pre><code class="html" data-trim>
+						<label for="firstName">First Name</label>
+						<input id="firstName" type="text" value="firstName" />
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>Need to make sure that all form fields have labels</li>
+							<li>I prefer the explicit approach, which introduces some challenges in Ember</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>What We Want</h3>
+					<pre><code class="html" data-trim>
+						<div class="ui-form-group">
+							<label for="firstName">First Name</label>
+							<input id="firstName" type="text" value="firstName" />
+						</div>
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>Unless we explicitly define an id on a view or component, Ember will automatically assign and add one</li>
+							<li>But if we don't explicitly define an id, we won't have access to the auto generated one to set as the "for" attribute on the label</li>
+							<li>So we need to programmatically create one</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>What We Have</h3>
+					<pre><code class="handlebars" data-trim>
+						{{#ui-form-group label='First Name' as |inputId|}}
+							{{ui-input value=firstName update=(action (mut firstName)) id=inputId}}
+						{{/ui-form-group}}
+
+						<!-- RESULT  -->
+						<div id="ember293" class="ui-form-group form-group">
+							<label for="ember293-input">
+								First Name
+							</label>
+							<input id="ember293-input" type="text" />
+						</div>
+					</code></pre>
+				</section>
+				<section>
+					<h3>Requiring Attributes</h3>
+					<pre><code class="handlebars" data-trim>
+						{{! example.hbs}}
+						{{#ui-form-group label='First Name' as |inputId|}}
+							{{ui-input id=inputId value=firstName update=(action (mut firstName))}}
+						{{/ui-form-group}}
+					</code></pre>
+					<pre><code class="javascript" data-trim>
+						import verifyAttrs from 'q2-ui-core/utils/verify-attrs';
+
+						const REQ_ATTRS = ['label'];
+
+						const UiIcon = Component.extend({
+							didReceiveAttrs() {
+								verifyAttrs.call(this, REQ_ATTRS);
+							},
+						});
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>We have a new utility function that we can use to add required attributes to components</li>
+							<li>We define an array outside of the Component class, to ensure it isn't tampered with</li>
+							<li>We then call this method on the didReceiveAttrs method, so that any time a property changes, we can efficiently ensure that the specified attributes are always present</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>Auto IDs</h3>
+					<pre><code class="handlebars" data-trim>
+						{{! example.hbs}}
+						{{#ui-form-group label='First Name' as |inputId|}}
+							{{ui-input id=inputId value=firstName update=(action (mut firstName))}}
+						{{/ui-form-group}}
+					</code></pre>
+					<pre><code class="javascript" data-trim>
+						// ui-form-group.js
+						export default Component.extend({
+							guid: computed(function() {
+								return guidFor(this);
+							}),
+
+							inputId: computed(function() {
+								const guid = get(this, 'guid');
+								return `${guid}-input`;
+							}),
+						});
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>We grab the unique id for the ui-form-group which wraps around the input</li>
+							<li>We then create another computed property, which appends "-input" to the id</li>
+							<li>This new id can be referenced on both the label and set on the input</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>
+						Auto IDs
+						<sup>
+							<small>2</small>
+						</sup>
+					</h3>
+					<pre><code class="handlebars" data-trim>
+						{{! example.hbs}}
+						{{#ui-form-group label='First Name' as |inputId|}}
+							{{ui-input id=inputId value=firstName update=(action (mut firstName))}}
+						{{/ui-form-group}}
+					</code></pre>
+					<pre><code class="handlebars" data-trim>
+						{{! ui-form-group.hbs}}
+						<label for={{inputId}}>{{loc label}}</label>
+
+						{{#if hasBlock}}
+							{{yield inputId descriptionId}}
+						{{/if}}
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>We are able to pass the inputId in to the yield block, in a manner very similar to positionalParams</li>
+							<li>The contents of our yield then use thoes values</li>
+							<li>So again, ui-form-group generates the unique inputId and sets it on the label and passes it to the yield so it can be used on the input</li>
+							<li>You may have noticed that we're also passing back a descriptionId</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>
+						Auto IDs
+						<sup>
+							<small>3</small>
+						</sup>
+					</h3>
+					<pre><code class="handlebars" data-trim>
+						{{! example.hbs}}
+						{{#ui-form-group label='First Name' as |inputId descriptionId|}}
+							{{ui-input id=inputId ariaDescribedBy=descriptionId value=firstName update=(action (mut firstName))}}
+							<div id="{{descriptionId}}">
+								Must not be empty
+							</div>
+						{{/ui-form-group}}
+
+						<!-- RESULT  -->
+						<div id="ember293" class="ui-form-group form-group">
+							<label for="ember293-input">
+								First Name
+							</label>
+							<input id="ember293-input" aria-describedby="ember293-description" type="text" />
+							<div id="ember293-description">
+								Must not be empty
+							</div>
+						</div>
+					</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>This allows us to also set an ariaDescribedBy property on the input, which tells the screen reader that there are additional destails about this element.</li>
+							<li>Toran has been putting forth tons of effort to update / replace our current form validation pattern in an effort to do away with our fork of Ember Validations.</li>
+							<li>As we move forward, this description area will be used to provide validation info to users. But that deserves it's own talk because I can't cover it all here.</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>Numbers</h2>
+				</section>
+					<section>
+						<h3>Crowd Participation</h3>
+						<p class="fragment">1,273.5</p>
+						<p class="fragment">"one two seven three five"</p>
+						<aside class="notes">
+							<ul>
+								<li>This is extremely hard to follow and make sense of as your are hearing it.</li>
+								<li>This isn't how we think of numbers when we read them.</li>
+							</ul>
+						</aside>
+					</section>
+					<section>
+						<h3>Crowd Participation</h3>
+						<p class="fragment">$255.13</p>
+						<p class="fragment">"dollar two five five one three"</p>
+						<aside class="notes">
+							<ul>
+								<li>Not only is it hard to understand, but it's wrong!</li>
+								<li>Mention Deque labs article: "A Guide to Punctuation and Typographic Symbols"</li>
+								<li>So our hand is forced to provide a little extra help on our side, in the form of aria-labels</li>
+							</ul>
+						</aside>
+					</section>
+					<section>
+						<h3>What We Want</h3>
+						<pre><code class="html" data-trim>
+							<span aria-label="one thousand two hundred seventy three point five">
+								1,273.5
+							</span>
+						</code></pre>
+						<p>or</p>
+						<pre><code class="html" data-trim>
+							<span aria-label="two hundred fifty five dollars and thirteen cents">
+								$255.13
+							</span>
+						</code></pre>
+					</section>
+					<section>
+						<h3>What We Have*</h3>
+						<pre><code class="handlebars" data-trim>
+							{{ui-num '1273.5'}}
+
+							<!-- RESULT  -->
+							<span class="ui-num" aria-label="one thousand two hundred seventy three point five">
+								1,273.5
+							</span>
+						</code></pre>
+						<p>or</p>
+						<pre><code class="handlebars" data-trim>
+							{{ui-currency '255.13'}}
+
+							<!-- RESULT  -->
+							<span class="ui-currency" aria-label="two hundred fifty five dollars and thirteen cents">
+								$255.13
+							</span>
+						</code></pre>
+					</section>
+					<section>
+						<h3>Number Magic</h3>
+						<pre><code class="handlebars" data-trim>
+							{{! example.hbs}}
+							{{ui-num '1273.5'}}
+						</code></pre>
+						<pre><code class="javascript" data-trim>
+							// ui-num.js
+							const UiNum = Component.extend({
+								number: null,
+
+								splitAmount: computed('number', function() {
+									let number = String(get(this, 'number')) || '0';
+									return number.split('.');
+								}),
+
+								formattedAmount: computed('splitAmount', function() {
+									let splitAmount = get(this, 'splitAmount');
+
+									splitAmount[0] = splitAmount[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+									return splitAmount.join('.');
+								}),
+							});
+						</code></pre>
+						<aside class="notes">
+							<ul>
+								<li>First we split the amount on the decimal point, creating a new array with two values</li>
+								<li>formattedAmount takes the first element in the splitAmounts array, commifies it, then joins the array again with the period</li>
+							</ul>
+						</aside>
+					</section>
+					<section>
+						<h3>
+							Number Magic
+							<sup>
+								<small>2</small>
+							</sup>
+						</h3>
+						<pre><code class="handlebars" data-trim>
+							{{! example.hbs}}
+							{{ui-num '1273.5'}}
+						</code></pre>
+						<pre><code class="javascript" data-trim>
+							// ui-num.js
+							import numberToWords from 'ally/utils/num-to-words';
+
+							const UiNum = Component.extend({
+								attributeBindings: [
+									'ariaLabel:aria-label',
+								],
+
+								ariaLabel: computed('splitAmount', function() {
+									let splitAmount = get(this, 'splitAmount') || [];
+									let result = splitAmount.map((amount) => numberToWords(amount));
+
+									return result.join(' point ');
+								}),
+							});
+						</code></pre>
+						<aside class="notes">
+							<ul>
+								<li>Please allow me to have a bit of a mysterious black box in numberToWords</li>
+								<li>For the sake of brevity, it takes a number and returns it back to us as a string of words</li>
+								<li>ariaLabel takes each element in the array and runs it through numberToWords, then joins the resulting array with the word "point"</li>
+							</ul>
+						</aside>
+					</section>
+					<section>
+						<h3>Money Magic</h3>
+						<pre><code class="handlebars" data-trim>
+							{{! example.hbs}}
+							{{ui-currency '255.13'}}
+						</code></pre>
+						<pre><code class="javascript" data-trim>
+							// ui-currency.js
+							import numberToWords from 'ally/utils/num-to-words';
+
+							const UiCurrency = Component.extend({
+								_ariaLabel: computed('number', function() {
+									let splitAmount = get(this, 'splitAmount');
+									let result = splitAmount.map((amount) => {
+										return item !== '00' ? numberToWords(item) : null;
+									});
+
+									let [ dollars, cents ] = result;
+
+									if (dollars && cents) {
+										return `${dollars} dollars and ${cents} cents`;
+									} else {
+										return `${dollars} dollars`;
+									}
+								}),
+							});
+						</code></pre>
+						<aside class="notes">
+							<ul>
+								<li>This component does much the same, but with a little added logic to account for the variances in how we "speak money"</li>
+							</ul>
+						</aside>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Next Steps</h2>
+					</section>
+					<section>
+						<h3>Get Involved</h3>
+						<ul>
+							<li class="fragment">Care as much about your HTML as you do your JavaScript</li>
+							<li class="fragment">Mock stuff up in CodePen</li>
+							<li class="fragment">If you touch a component, improve it</li>
+							<li class="fragment">If you have a question, ask it</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Get Educated</h3>
+						<ul>
+							<li class="fragment"><strong>Beginner</strong> - A11YProject, Wuhcag</li>
+							<li class="fragment"><strong>Intermediate</strong> - MDN (Mozilla Developer Network)</li>
+							<li class="fragment"><strong>Advanced</strong> - W3</li>
+							<li class="fragment"><strong>Blogs</strong> - Deque Labs, Interactive Accessibility, My Blog</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Get Geared Up</h3>
+						<ul>
+							<li>Tota11y</li>
+							<li>aXe Chrome Extension</li>
+							<li>Wave</li>
+							<li>Chrome Accessibility Developer Tools</li>
+						</ul>
+						<aside class="notes">
+							<ul>
+								<li>View it more like SEO in that there are always more tweaks you can make, but taking those first steps is key. </li>
+							</li>
+						</aside>
+					</section>
+				</section>
+				<section>
+					<h2>Fin</h2>
+				</section>
 			</div>
 		</div>
 
@@ -38,12 +731,18 @@
 			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
 				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
-			});
-		</script>
-	</body>
+				{ src: 'plugin/markdown/marked.js' },
+				{ src: 'plugin/markdown/markdown.js' },
+				{ src: 'plugin/notes/notes.js', async: true },
+				{ src: 'plugin/highlight/highlight.js', async: true, callback: function() {
+					hljs.configure({
+						tabReplace: '  '
+					})
+					hljs.initHighlightingOnLoad();
+				}
+			}
+			]
+		});
+	</script>
+</body>
 </html>
